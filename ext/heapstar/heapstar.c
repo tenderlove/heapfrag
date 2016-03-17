@@ -12,7 +12,7 @@ int object_itr(void * start, void * finish, size_t step, void * data)
     size_t n;
     ID flags[5];
 
-    dprintf(info->fd, "page %d: ", info->pages_seen);
+    dprintf(info->fd, "{\"page\":%d,\"heap\":\"", info->pages_seen);
     for(; v != (VALUE)finish; v += step) {
 	switch (BUILTIN_TYPE(v)) {
 	    default: {
@@ -37,7 +37,7 @@ int object_itr(void * start, void * finish, size_t step, void * data)
 		break;
 	}
     }
-    dprintf(info->fd, "\n");
+    dprintf(info->fd, "\"},");
     info->pages_seen++;
     return 0;
 }
@@ -49,7 +49,9 @@ static VALUE heapstar_start(VALUE mod, VALUE usec, VALUE fd)
 
     info.pages_seen = 0;
     info.fd = NUM2INT(rb_funcall(fd, rb_intern("to_i"), 0));
+    dprintf(info.fd, "[");
     rb_objspace_each_objects(object_itr, &info);
+    dprintf(info.fd, "{}]");
     return Qtrue;
 }
 
