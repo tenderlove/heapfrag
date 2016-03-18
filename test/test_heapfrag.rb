@@ -1,7 +1,7 @@
 require 'minitest/autorun'
-require 'heapstar'
+require 'heapfrag'
 
-class TestHeapstar < Minitest::Test
+class TestHeapfrag < Minitest::Test
   def test_sanity
     flunk "omg"
   end

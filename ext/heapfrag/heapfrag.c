@@ -61,7 +61,7 @@ static void realtime_handler(int signum, siginfo_t *info, void *context)
     dprintf(ruby_info.fd, "{}]\n");
 }
 
-static VALUE heapstar_start(VALUE mod, VALUE usec, VALUE fd)
+static VALUE heapfrag_start(VALUE mod, VALUE usec, VALUE fd)
 {
     struct sigaction act;
     struct itimerval itv;
@@ -84,15 +84,15 @@ static VALUE heapstar_start(VALUE mod, VALUE usec, VALUE fd)
     return Qtrue;
 }
 
-static VALUE heapstar_stop(VALUE mod)
+static VALUE heapfrag_stop(VALUE mod)
 {
     return Qfalse;
 }
 
-void Init_heapstar()
+void Init_heapfrag()
 {
-    VALUE mHeapstar = rb_define_module("Heapstar");
-    rb_define_singleton_method(mHeapstar, "start", heapstar_start, 2);
-    rb_define_singleton_method(mHeapstar, "stop", heapstar_stop, 0);
+    VALUE mHeapfrag = rb_define_module("Heapfrag");
+    rb_define_singleton_method(mHeapfrag, "start", heapfrag_start, 2);
+    rb_define_singleton_method(mHeapfrag, "stop", heapfrag_stop, 0);
 }
 /* vim: set noet sws=4 sw=4: */
