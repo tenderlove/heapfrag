@@ -15,6 +15,11 @@ This. Is. A. Huge. Hack.
 
 * All of them
 
+One problem is that the heap dumped as JSON is really big.  I'm having
+problems dumping it fast enough.  You can adjust the timer interval when you
+call `Heapfrag.start`, so if you have a large heap, then a slower interval
+might be better.
+
 == SYNOPSIS:
 
 In one terminal:
