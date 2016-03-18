@@ -51,14 +51,19 @@ static int write_fd;
 
 static void realtime_handler(int signum, siginfo_t *info, void *context)
 {
+    static int in_signal = 0;
     struct heap_info ruby_info;
 
+    if (in_signal) return;
+
+    in_signal++;
     ruby_info.pages_seen = 0;
     ruby_info.fd = write_fd;
 
     dprintf(ruby_info.fd, "[");
     rb_objspace_each_objects(object_itr, &ruby_info);
     dprintf(ruby_info.fd, "{}]\n");
+    in_signal--;
 }
 
 static VALUE heapfrag_start(VALUE mod, VALUE usec, VALUE fd)
