@@ -1,4 +1,6 @@
 #include <ruby.h>
+#include <signal.h>
+#include <sys/time.h>
 
 struct heap_info {
     int pages_seen;
@@ -12,7 +14,7 @@ int object_itr(void * start, void * finish, size_t step, void * data)
     size_t n;
     ID flags[5];
 
-    dprintf(info->fd, "{\"page\":%d,\"heap\":\"", info->pages_seen);
+    dprintf(info->fd, "{\"page\":%d,\"heap\":[", info->pages_seen);
     for(; v != (VALUE)finish; v += step) {
 	switch (BUILTIN_TYPE(v)) {
 	    default: {
@@ -36,22 +38,49 @@ int object_itr(void * start, void * finish, size_t step, void * data)
 		dprintf(info->fd, "0");
 		break;
 	}
+	if ((v + step) != (VALUE)finish) {
+	    dprintf(info->fd, ",");
+	}
     }
-    dprintf(info->fd, "\"},");
+    dprintf(info->fd, "]},");
     info->pages_seen++;
     return 0;
 }
 
+static int write_fd;
+
+static void realtime_handler(int signum, siginfo_t *info, void *context)
+{
+    struct heap_info ruby_info;
+
+    ruby_info.pages_seen = 0;
+    ruby_info.fd = write_fd;
+
+    dprintf(ruby_info.fd, "[");
+    rb_objspace_each_objects(object_itr, &ruby_info);
+    dprintf(ruby_info.fd, "{}]\n");
+}
+
 static VALUE heapstar_start(VALUE mod, VALUE usec, VALUE fd)
 {
-    struct heap_info info;
-    rb_iv_set(mod, "file", fd);
+    struct sigaction act;
+    struct itimerval itv;
 
-    info.pages_seen = 0;
-    info.fd = NUM2INT(rb_funcall(fd, rb_intern("to_i"), 0));
-    dprintf(info.fd, "[");
-    rb_objspace_each_objects(object_itr, &info);
-    dprintf(info.fd, "{}]");
+    rb_iv_set(mod, "file", fd); /* prevent GC */
+
+    write_fd = NUM2INT(rb_funcall(fd, rb_intern("to_i"), 0));
+
+    act.sa_sigaction = realtime_handler;
+    act.sa_flags = SA_RESTART | SA_SIGINFO;
+    sigemptyset(&act.sa_mask);
+    sigaction(SIGALRM, &act, NULL);
+
+    itv.it_interval.tv_sec = 0;
+    itv.it_interval.tv_usec = NUM2LONG(usec);
+    itv.it_value.tv_sec = 0;
+    itv.it_value.tv_usec = NUM2LONG(usec);
+    setitimer(ITIMER_REAL, &itv, NULL);
+
     return Qtrue;
 }
 
