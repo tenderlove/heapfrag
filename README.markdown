@@ -1,8 +1,8 @@
-= Heapfrag
+# Heapfrag
 
 * https://github.com/tenderlove/heapfrag
 
-== DESCRIPTION:
+## DESCRIPTION:
 
 This is a library for dumping and visualizing your heap in MRI.  This code is
 not for the feint of heart.  I don't know what versions of Ruby this will work
@@ -11,7 +11,7 @@ it doesn't work for you, please send a PR!
 
 This. Is. A. Huge. Hack.
 
-== FEATURES/PROBLEMS:
+## FEATURES/PROBLEMS:
 
 * All of them
 
@@ -20,14 +20,17 @@ problems dumping it fast enough.  You can adjust the timer interval when you
 call `Heapfrag.start`, so if you have a large heap, then a slower interval
 might be better.
 
-== SYNOPSIS:
+## SYNOPSIS:
 
 In one terminal:
 
+```
 $ ruby bin/heap2raster.rb /tmp/sock
+```
 
 In a different terminal:
 
+```
 $ ruby --disable-gem -Ilib -rsocket -rheapfrag -S irb
 irb(main):001:0> Heapfrag.start(500_000, UNIXSocket.open("/tmp/sock"))
 => true
@@ -35,19 +38,23 @@ irb(main):002:0> GC.start
 => nil
 irb(main):003:0> x = 5000.times.map { Object.new }; nil
 => nil
+```
 
+Hopefully this gif will help:
 
-== REQUIREMENTS:
+![demo](demo.gif)
+
+## REQUIREMENTS:
 
 * opengl
 * glu
 * glut
 
-== INSTALL:
+## INSTALL:
 
 You should use this from Git.
 
-== LICENSE:
+## LICENSE:
 
 (The MIT License)
 
