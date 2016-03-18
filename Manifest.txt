@@ -1,7 +1,10 @@
-History.txt
+.autotest
+CHANGELOG.rdoc
 Manifest.txt
-README.txt
+README.rdoc
 Rakefile
-bin/heapstar
-lib/heapstar.rb
-test/test_heapstar.rb
+bin/heap2raster.rb
+ext/heapfrag/extconf.rb
+ext/heapfrag/heapfrag.c
+lib/heapfrag.bundle
+test/test_heapfrag.rb

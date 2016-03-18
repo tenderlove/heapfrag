@@ -86,7 +86,7 @@ end
 queue = Queue.new
 
 Thread.new do
-  server = UNIXServer.new("/tmp/sock")
+  server = UNIXServer.new ARGV[0]
   sock = server.accept
   puts "CONNECTED"
   while z = sock.readline
