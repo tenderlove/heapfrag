@@ -54,6 +54,11 @@ Hopefully this gif will help:
 
 You should use this from Git.
 
+```
+bundle install
+rake compile:heapfrag
+```
+
 ## LICENSE:
 
 (The MIT License)
