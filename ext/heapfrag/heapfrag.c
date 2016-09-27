@@ -14,7 +14,7 @@ int object_itr(void * start, void * finish, size_t step, void * data)
     size_t n;
     ID flags[5];
 
-    dprintf(info->fd, "{\"page\":%d,\"heap\":[", info->pages_seen);
+    dprintf(info->fd, "%d\t", info->pages_seen);
     for(; v != (VALUE)finish; v += step) {
 	switch (BUILTIN_TYPE(v)) {
 	    default: {
@@ -25,24 +25,21 @@ int object_itr(void * start, void * finish, size_t step, void * data)
 				 if(ID_old == flags[i]) is_old = 1;
 			     }
 			     if (is_old) {
-				 dprintf(info->fd, "2");
+				 dprintf(info->fd, "%c", 2);
 			     } else {
-				 dprintf(info->fd, "1");
+				 dprintf(info->fd, "%c", 1);
 			     }
 			 } else {
-			     dprintf(info->fd, "1");
+			     dprintf(info->fd, "%c", 1);
 			 }
 			 break;
 		     }
 	    case T_NONE:
-		dprintf(info->fd, "0");
+		dprintf(info->fd, "%c", 0);
 		break;
 	}
-	if ((v + step) != (VALUE)finish) {
-	    dprintf(info->fd, ",");
-	}
     }
-    dprintf(info->fd, "]},");
+    dprintf(info->fd, "\t");
     info->pages_seen++;
     return 0;
 }
@@ -60,9 +57,8 @@ static void realtime_handler(int signum, siginfo_t *info, void *context)
     ruby_info.pages_seen = 0;
     ruby_info.fd = write_fd;
 
-    dprintf(ruby_info.fd, "[");
     rb_objspace_each_objects(object_itr, &ruby_info);
-    dprintf(ruby_info.fd, "{}]\n");
+    dprintf(ruby_info.fd, "\n");
     in_signal--;
 }
 

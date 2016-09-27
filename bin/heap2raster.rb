@@ -1,7 +1,6 @@
 require 'opengl'
 require 'glu'
 require 'glut'
-require 'json'
 require 'socket'
 
 include Gl,Glu,Glut
@@ -85,12 +84,19 @@ end
 
 queue = Queue.new
 
+def parse line
+  line.chomp.split("\t").each_slice(2).collect { |page, heap|
+    {"page" => page.to_i, "heap" => heap.bytes}
+  } << {}
+end
+
+Thread.abort_on_exception = true
 Thread.new do
   server = UNIXServer.new ARGV[0]
   sock = server.accept
   puts "CONNECTED"
   while z = sock.readline
-    heap = JSON.parse z
+    heap = parse z
     $bitmap = make_bitmap heap
     queue << :updated
   end
