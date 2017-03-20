@@ -108,7 +108,7 @@ init()
 glutReshapeFunc(reshape)
 glutDisplayFunc(display)
 glutIdleFunc(lambda {
-  queue.pop
+  queue.pop unless queue.empty?
   glutPostRedisplay
 })
 glutMainLoop()
